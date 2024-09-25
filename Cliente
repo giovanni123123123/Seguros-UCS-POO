@@ -1,0 +1,40 @@
+package TrabalhoPOO;
+
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Cliente {
+    private String nome;
+    private String cpf;
+    private LocalDate dataNascimento;
+    private int idade;
+    private String endereco;  
+    private List<Seguro> seguros;
+
+    
+    public Cliente(String nome, String cpf, LocalDate dataNascimento, String endereco) {
+        this.nome = nome;
+        this.cpf = cpf;
+        this.dataNascimento = dataNascimento;
+        this.idade = calcularIdade();
+        this.endereco = endereco;
+        this.seguros = new ArrayList<>();
+    }
+
+    
+    public int calcularIdade() {
+        return Period.between(this.dataNascimento, LocalDate.now()).getYears();
+    }
+
+    public String getNome() { return nome; }
+    public String getCpf() { return cpf; }
+    public int getIdade() { return idade; }
+    public String getEndereco() { return endereco; }  
+
+    
+    public void adicionarSeguro(Seguro seguro) { this.seguros.add(seguro); }
+
+    public List<Seguro> getSeguros() { return seguros; }
+}
