@@ -1,0 +1,176 @@
+package TrabalhoPOO;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+    private static List<Cliente> clientes = new ArrayList<>();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        boolean rodando = true;
+
+        while (rodando) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Cadastrar Cliente");
+            System.out.println("2. Cadastrar Seguro");
+            System.out.println("3. Listar todos os Seguros");
+            System.out.println("4. Listar todos os Clientes");
+            System.out.println("5. Listar Seguros de um Cliente");
+            System.out.println("6. Consultar Seguros de Clientes com menos de 25 anos");
+            System.out.println("7. Sair");
+            System.out.print("Escolha uma opção: ");
+            int opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (opcao) {
+                case 1:
+                    cadastrarCliente(scanner);
+                    break;
+
+                case 2:
+                    cadastrarSeguro(scanner);
+                    break;
+
+                case 3:
+                    listarSeguros();
+                    break;
+
+                case 4:
+                    listarClientes();
+                    break;
+
+                case 5:
+                    listarSegurosPorCliente(scanner);
+                    break;
+
+                case 6:
+                    listarSegurosClientesMenores25();
+                    break;
+
+                case 7:
+                    rodando = false;
+                    break;
+
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+                    break;
+            }
+        }
+        scanner.close();
+    }
+
+    public static void cadastrarCliente(Scanner scanner) {
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+        System.out.print("CPF: ");
+        String cpf = scanner.nextLine();
+        System.out.print("Data de nascimento (YYYY-MM-DD): ");
+        String dataNascimento = scanner.nextLine();
+        System.out.print("Endereço: ");
+        String endereco = scanner.nextLine();
+
+        Cliente cliente = new Cliente(nome, cpf, LocalDate.parse(dataNascimento), endereco);
+
+        if (buscarClientePorCpf(cpf) == null) {
+            clientes.add(cliente);
+            System.out.println("Cliente cadastrado com sucesso!");
+        } else {
+            System.out.println("Cliente já cadastrado.");
+        }
+    }
+
+    public static void cadastrarSeguro(Scanner scanner) {
+        System.out.print("CPF do Cliente: ");
+        String cpfCliente = scanner.nextLine();
+        Cliente clienteEncontrado = buscarClientePorCpf(cpfCliente);
+
+        if (clienteEncontrado != null) {
+            System.out.print("Número da Apólice: ");
+            int numeroApolice = scanner.nextInt();
+            System.out.print("Valor Base do Seguro: ");
+            double valorBase = scanner.nextDouble();
+            scanner.nextLine();
+            System.out.print("Data de Validade (AAAA-MM-DD): ");
+            String dataValidade = scanner.nextLine();
+
+            Seguro seguro = new Seguro(numeroApolice, valorBase, LocalDate.parse(dataValidade), clienteEncontrado);
+            clienteEncontrado.adicionarSeguro(seguro);
+            System.out.println("Seguro cadastrado com sucesso!");
+        } else {
+            System.out.println("Cliente não encontrado.");
+        }
+    }
+
+    public static void listarSeguros() {
+        if (clientes.isEmpty()) {
+            System.out.println("Nenhum seguro cadastrado.");
+        } else {
+            for (Cliente cliente : clientes) {
+                for (Seguro seguro : cliente.getSeguros()) {
+                    System.out.println("Apólice: " + seguro.getNumeroApolice() +
+                            ", Valor: " + seguro.getValorFinal() +
+                            ", Cliente: " + cliente.getNome());
+                }
+            }
+        }
+    }
+
+    public static void listarClientes() {
+        if (clientes.isEmpty()) {
+            System.out.println("Nenhum cliente cadastrado.");
+        } else {
+            for (Cliente cliente : clientes) {
+                System.out.println("Nome: " + cliente.getNome() +
+                        ", CPF: " + cliente.getCpf() +
+                        ", Idade: " + cliente.getIdade());
+            }
+        }
+    }
+
+    public static void listarSegurosPorCliente(Scanner scanner) {
+        System.out.print("CPF do Cliente: ");
+        String cpfCliente = scanner.nextLine();
+        Cliente clienteEncontrado = buscarClientePorCpf(cpfCliente);
+
+        if (clienteEncontrado != null) {
+            if (clienteEncontrado.getSeguros().isEmpty()) {
+                System.out.println("Este cliente não possui seguros cadastrados.");
+            } else {
+                for (Seguro seguro : clienteEncontrado.getSeguros()) {
+                    System.out.println("Apólice: " + seguro.getNumeroApolice() +
+                            ", Valor: " + seguro.getValorFinal());
+                }
+            }
+        } else {
+            System.out.println("Cliente não encontrado.");
+        }
+    }
+
+    public static void listarSegurosClientesMenores25() {
+        boolean encontrado = false;
+        for (Cliente cliente : clientes) {
+            if (cliente.getIdade() < 25) {
+                for (Seguro seguro : cliente.getSeguros()) {
+                    System.out.println("Cliente: " + cliente.getNome() +
+                            ", Valor do Seguro: " + seguro.getValorFinal());
+                    encontrado = true;
+                }
+            }
+        }
+        if (!encontrado) {
+            System.out.println("Nenhum cliente com menos de 25 anos possui seguros.");
+        }
+    }
+
+    public static Cliente buscarClientePorCpf(String cpf) {
+        for (Cliente cliente : clientes) {
+            if (cliente.getCpf().equals(cpf)) {
+                return cliente;
+            }
+        }
+        return null;
+    }
+}
