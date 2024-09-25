@@ -1,0 +1,33 @@
+package TrabalhoPOO;
+
+import java.time.LocalDate;
+
+public class Seguro {
+    private int numeroApolice;
+    private double valorBase;
+    private double valorFinal;
+    private LocalDate dataValidade;
+    private Cliente cliente;
+
+    public Seguro(int numeroApolice, double valorBase, LocalDate dataValidade, Cliente cliente) {
+        this.numeroApolice = numeroApolice;
+        this.valorBase = valorBase;
+        this.dataValidade = dataValidade;
+        this.cliente = cliente;
+        this.valorFinal = calcularValorFinal();
+    }
+
+    public double calcularValorFinal() {
+        int idade = cliente.getIdade();
+        if (idade <= 25) {
+            return valorBase * 1.10;
+        } else if (idade > 40) {
+            return valorBase * 0.85;
+        } else {
+            return valorBase;
+        }
+    }
+
+    public int getNumeroApolice() { return numeroApolice; }
+    public double getValorFinal() { return valorFinal; }
+}
